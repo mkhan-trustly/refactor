@@ -26,14 +26,14 @@ public class TransactionProcessor {
 
     public void processTransaction(AccountId sender, AccountId receiver, BigDecimal amount) {
         validateAmount(amount);
-        BigDecimal fee;
+
 
         synchronized (accountBalances) {
             verifyAccountExists(sender);
             verifyAccountExists(receiver);
             verifySufficientFunds(sender, amount);
 
-            fee = feeCalculator.applyFee(amount);
+            BigDecimal fee = feeCalculator.applyFee(amount);
 
             accountBalances.put(sender, accountBalances.get(sender).subtract(amount).subtract(fee));
             accountBalances.put(receiver, accountBalances.get(receiver).add(amount));
@@ -41,8 +41,8 @@ public class TransactionProcessor {
             logTransaction(sender, receiver, amount, fee);
         }
 
-        logger.info("Transaction completed: Sender={}, Receiver={}, Amount={}, Fee={}", 
-            sender.id(), receiver.id(), amount, fee);
+        logger.info("Transaction completed: Sender={}, Receiver={}, Amount={}",
+            sender.id(), receiver.id(), amount);
     }
 
     private void validateAmount(BigDecimal amount) {
